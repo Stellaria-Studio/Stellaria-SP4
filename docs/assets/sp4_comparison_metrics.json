@@ -1,0 +1,161 @@
+{
+  "sp4_curve": [
+    {
+      "bytes": 1286292.0,
+      "compression": 3.53,
+      "rmse": 0.007846,
+      "mae": 0.00613,
+      "max_abs": 0.161652,
+      "task_acc": 89.75,
+      "cpu_ms": 128.495,
+      "residual_ratio": 0.0
+    },
+    {
+      "bytes": 1411707.0,
+      "compression": 3.22,
+      "rmse": 0.007503,
+      "mae": 0.005944,
+      "max_abs": 0.140825,
+      "task_acc": 90.22,
+      "cpu_ms": 143.109,
+      "residual_ratio": 0.005
+    },
+    {
+      "bytes": 1471446.0,
+      "compression": 3.09,
+      "rmse": 0.007335,
+      "mae": 0.005814,
+      "max_abs": 0.140825,
+      "task_acc": 90.42,
+      "cpu_ms": 134.006,
+      "residual_ratio": 0.01
+    },
+    {
+      "bytes": 1583724.0,
+      "compression": 2.87,
+      "rmse": 0.00706,
+      "mae": 0.005583,
+      "max_abs": 0.140825,
+      "task_acc": 90.78,
+      "cpu_ms": 132.815,
+      "residual_ratio": 0.02
+    },
+    {
+      "bytes": 1851372.0,
+      "compression": 2.45,
+      "rmse": 0.006595,
+      "mae": 0.005163,
+      "max_abs": 0.140825,
+      "task_acc": 91.38,
+      "cpu_ms": 140.25,
+      "residual_ratio": 0.04
+    }
+  ],
+  "baseline_rows": {
+    "FP16 baseline": {
+      "bytes": 4543830.0,
+      "compression": 1.0,
+      "rmse": 0.000557,
+      "mae": 1.7e-05,
+      "max_abs": 0.249917,
+      "task_acc": 99.26,
+      "cpu_ms": 819.067
+    },
+    "INT8 per-output": {
+      "bytes": 2278665.0,
+      "compression": 1.99,
+      "rmse": 0.000942,
+      "mae": 0.000752,
+      "max_abs": 0.00843,
+      "task_acc": 98.79,
+      "cpu_ms": 819.067
+    },
+    "INT4 weight-only per-output": {
+      "bytes": 1142709.0,
+      "compression": 3.98,
+      "rmse": 0.016821,
+      "mae": 0.01354,
+      "max_abs": 0.159035,
+      "task_acc": 78.27,
+      "cpu_ms": 819.067
+    },
+    "NF4-like block codebook": {
+      "bytes": 1208694.0,
+      "compression": 3.76,
+      "rmse": 0.008428,
+      "mae": 0.006394,
+      "max_abs": 0.268344,
+      "task_acc": 88.76,
+      "cpu_ms": 819.067
+    },
+    "W4A8 block no residual": {
+      "bytes": 1280508.0,
+      "compression": 3.55,
+      "rmse": 0.010679,
+      "mae": 0.008472,
+      "max_abs": 0.159035,
+      "task_acc": 86.05,
+      "cpu_ms": 819.067
+    },
+    "SP4 A1P sparse residual": {
+      "bytes": 1583724.0,
+      "compression": 2.87,
+      "rmse": 0.00706,
+      "mae": 0.005583,
+      "max_abs": 0.140825,
+      "task_acc": 90.78,
+      "cpu_ms": 132.815,
+      "residual_ratio": 0.02
+    },
+    "SP4 int8-chase ZP+learned": {
+      "bytes": 1617396.0,
+      "compression": 2.81,
+      "rmse": 0.006678,
+      "mae": 0.005346,
+      "max_abs": 0.187433,
+      "task_acc": 91.28,
+      "cpu_ms": 131.7,
+      "residual_ratio": 0.02,
+      "quality_profile": "int8-chase"
+    }
+  },
+  "metal_throughput": {
+    "SP4Conv2D_W4A8_Block32": {
+      "avg_gops": 154.845,
+      "peak_gops": 249.826
+    },
+    "SP4Conv2D_W4A8_Block64": {
+      "avg_gops": 778.796,
+      "peak_gops": 946.554
+    },
+    "FP16": {
+      "avg_gops": 417.91,
+      "peak_gops": 546.925
+    },
+    "INT8 per-output": {
+      "avg_gops": 384.446,
+      "peak_gops": 478.939
+    },
+    "INT4 per-output": {
+      "avg_gops": 256.894,
+      "peak_gops": 314.287
+    },
+    "NF4-like": {
+      "avg_gops": 115.154,
+      "peak_gops": 137.982
+    },
+    "W4A8 block": {
+      "avg_gops": 128.271,
+      "peak_gops": 151.195
+    },
+    "SP4 INT32x8": {
+      "avg_gops": 350.51,
+      "peak_gops": 429.896
+    }
+  },
+  "charts": [
+    "docs/assets/sp4_accuracy_compression_curve.svg",
+    "docs/assets/sp4_residual_tradeoff_curve.svg",
+    "docs/assets/sp4_throughput_comparison.svg"
+  ]
+}

@@ -1,0 +1,16 @@
+[project]
+name = "stellaria-sp4"
+version = "0.1.0"
+description = "Stellaria Split Precision 4 preview toolchain"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.24",
+  "safetensors>=0.4",
+]
+
+[project.scripts]
+sp4 = "sp4_toolchain.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
