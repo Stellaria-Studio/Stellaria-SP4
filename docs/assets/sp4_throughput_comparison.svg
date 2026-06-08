@@ -1,55 +1,70 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="980" height="560" viewBox="0 0 980 560">
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="660" viewBox="0 0 1180 660">
 <rect width="100%" height="100%" fill="#fbfbfc"/>
-<text x="490" y="30" text-anchor="middle" font-family="Inter,Arial" font-size="22" font-weight="700" fill="#1f2937">Metal throughput by quantization scheme</text>
-<rect x="96" y="56" width="852" height="376" fill="#fff" stroke="#d1d5db"/>
-<line x1="96" y1="56.00" x2="948" y2="56.00" stroke="#e5e7eb"/>
-<text x="86" y="60.00" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">1117</text>
-<line x1="96" y1="131.20" x2="948" y2="131.20" stroke="#e5e7eb"/>
-<text x="86" y="135.20" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">894</text>
-<line x1="96" y1="206.40" x2="948" y2="206.40" stroke="#e5e7eb"/>
-<text x="86" y="210.40" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">670</text>
-<line x1="96" y1="281.60" x2="948" y2="281.60" stroke="#e5e7eb"/>
-<text x="86" y="285.60" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">447</text>
-<line x1="96" y1="356.80" x2="948" y2="356.80" stroke="#e5e7eb"/>
-<text x="86" y="360.80" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">223</text>
-<line x1="96" y1="432.00" x2="948" y2="432.00" stroke="#e5e7eb"/>
-<text x="86" y="436.00" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">0</text>
-<text transform="translate(24 244) rotate(-90)" text-anchor="middle" font-family="Arial" font-size="15" fill="#111827">GOPS</text>
-<rect x="750" y="64" width="14" height="14" fill="#2563eb"/><text x="772" y="76" font-family="Arial" font-size="13" fill="#111827">average</text>
-<rect x="750" y="86" width="14" height="14" fill="#f97316"/><text x="772" y="98" font-family="Arial" font-size="13" fill="#111827">peak</text>
-<rect x="119.78" y="291.32" width="34.08" height="140.68" fill="#2563eb"/>
-<rect x="159.86" y="247.89" width="34.08" height="184.11" fill="#f97316"/>
-<text x="156.86" y="450" text-anchor="middle" font-family="Arial" font-size="12" fill="#111827">FP16</text>
-<text x="136.82" y="285.32" text-anchor="middle" font-family="Arial" font-size="11" fill="#1d4ed8">418</text>
-<text x="176.90" y="241.89" text-anchor="middle" font-family="Arial" font-size="11" fill="#c2410c">547</text>
-<rect x="241.49" y="302.58" width="34.08" height="129.42" fill="#2563eb"/>
-<rect x="281.57" y="270.77" width="34.08" height="161.23" fill="#f97316"/>
-<text x="278.57" y="450" text-anchor="middle" font-family="Arial" font-size="12" fill="#111827">INT8 per-output</text>
-<text x="258.53" y="296.58" text-anchor="middle" font-family="Arial" font-size="11" fill="#1d4ed8">384</text>
-<text x="298.61" y="264.77" text-anchor="middle" font-family="Arial" font-size="11" fill="#c2410c">479</text>
-<rect x="363.21" y="345.52" width="34.08" height="86.48" fill="#2563eb"/>
-<rect x="403.29" y="326.20" width="34.08" height="105.80" fill="#f97316"/>
-<text x="400.29" y="450" text-anchor="middle" font-family="Arial" font-size="12" fill="#111827">INT4 per-output</text>
-<text x="380.25" y="339.52" text-anchor="middle" font-family="Arial" font-size="11" fill="#1d4ed8">257</text>
-<text x="420.33" y="320.20" text-anchor="middle" font-family="Arial" font-size="11" fill="#c2410c">314</text>
-<rect x="484.92" y="393.24" width="34.08" height="38.76" fill="#2563eb"/>
-<rect x="525.00" y="385.55" width="34.08" height="46.45" fill="#f97316"/>
-<text x="522.00" y="450" text-anchor="middle" font-family="Arial" font-size="12" fill="#111827">NF4-like</text>
-<text x="501.96" y="387.24" text-anchor="middle" font-family="Arial" font-size="11" fill="#1d4ed8">115</text>
-<text x="542.04" y="379.55" text-anchor="middle" font-family="Arial" font-size="11" fill="#c2410c">138</text>
-<rect x="606.63" y="388.82" width="34.08" height="43.18" fill="#2563eb"/>
-<rect x="646.71" y="381.10" width="34.08" height="50.90" fill="#f97316"/>
-<text x="643.71" y="450" text-anchor="middle" font-family="Arial" font-size="12" fill="#111827">W4A8 block</text>
-<text x="623.67" y="382.82" text-anchor="middle" font-family="Arial" font-size="11" fill="#1d4ed8">128</text>
-<text x="663.75" y="375.10" text-anchor="middle" font-family="Arial" font-size="11" fill="#c2410c">151</text>
-<rect x="728.35" y="314.01" width="34.08" height="117.99" fill="#2563eb"/>
-<rect x="768.43" y="287.28" width="34.08" height="144.72" fill="#f97316"/>
-<text x="765.43" y="450" text-anchor="middle" font-family="Arial" font-size="12" fill="#111827">SP4 INT32x8</text>
-<text x="745.39" y="308.01" text-anchor="middle" font-family="Arial" font-size="11" fill="#1d4ed8">351</text>
-<text x="785.47" y="281.28" text-anchor="middle" font-family="Arial" font-size="11" fill="#c2410c">430</text>
-<rect x="850.06" y="169.83" width="34.08" height="262.17" fill="#2563eb"/>
-<rect x="890.14" y="113.36" width="34.08" height="318.64" fill="#f97316"/>
-<text x="887.14" y="450" text-anchor="middle" font-family="Arial" font-size="12" fill="#111827">SP4Conv2D_W4A8_Block64</text>
-<text x="867.10" y="163.83" text-anchor="middle" font-family="Arial" font-size="11" fill="#1d4ed8">779</text>
-<text x="907.18" y="107.36" text-anchor="middle" font-family="Arial" font-size="11" fill="#c2410c">947</text>
+<text x="590" y="30" text-anchor="middle" font-family="Inter,Arial" font-size="22" font-weight="700" fill="#1f2937">Metal throughput: quantization schemes and SP4 backend kernels</text>
+<rect x="96" y="58" width="1052" height="414" fill="#fff" stroke="#d1d5db"/>
+<line x1="96" y1="58.00" x2="1148" y2="58.00" stroke="#e5e7eb"/>
+<text x="86" y="62.00" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">1861</text>
+<line x1="96" y1="140.80" x2="1148" y2="140.80" stroke="#e5e7eb"/>
+<text x="86" y="144.80" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">1489</text>
+<line x1="96" y1="223.60" x2="1148" y2="223.60" stroke="#e5e7eb"/>
+<text x="86" y="227.60" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">1116</text>
+<line x1="96" y1="306.40" x2="1148" y2="306.40" stroke="#e5e7eb"/>
+<text x="86" y="310.40" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">744</text>
+<line x1="96" y1="389.20" x2="1148" y2="389.20" stroke="#e5e7eb"/>
+<text x="86" y="393.20" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">372</text>
+<line x1="96" y1="472.00" x2="1148" y2="472.00" stroke="#e5e7eb"/>
+<text x="86" y="476.00" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">0</text>
+<text transform="translate(24 265) rotate(-90)" text-anchor="middle" font-family="Arial" font-size="15" fill="#111827">GOPS</text>
+<rect x="950" y="66" width="14" height="14" fill="#2563eb"/><text x="972" y="78" font-family="Arial" font-size="13" fill="#111827">average</text>
+<rect x="950" y="88" width="14" height="14" fill="#f97316"/><text x="972" y="100" font-family="Arial" font-size="13" fill="#111827">peak</text>
+<rect x="116.14" y="374.08" width="29.46" height="97.92" fill="#2563eb"/>
+<rect x="151.60" y="347.17" width="29.46" height="124.83" fill="#f97316"/>
+<text transform="translate(148.60 500) rotate(35)" text-anchor="start" font-family="Arial" font-size="12" fill="#111827">FP16</text>
+<text x="130.87" y="368.08" text-anchor="middle" font-family="Arial" font-size="11" fill="#1d4ed8">440</text>
+<text x="166.33" y="341.17" text-anchor="middle" font-family="Arial" font-size="11" fill="#c2410c">561</text>
+<rect x="221.34" y="383.57" width="29.46" height="88.43" fill="#2563eb"/>
+<rect x="256.80" y="359.33" width="29.46" height="112.67" fill="#f97316"/>
+<text transform="translate(253.80 500) rotate(35)" text-anchor="start" font-family="Arial" font-size="12" fill="#111827">INT8</text>
+<text x="236.07" y="377.57" text-anchor="middle" font-family="Arial" font-size="11" fill="#1d4ed8">397</text>
+<text x="271.53" y="353.33" text-anchor="middle" font-family="Arial" font-size="11" fill="#c2410c">506</text>
+<rect x="326.54" y="411.22" width="29.46" height="60.78" fill="#2563eb"/>
+<rect x="362.00" y="399.29" width="29.46" height="72.71" fill="#f97316"/>
+<text transform="translate(359.00 500) rotate(35)" text-anchor="start" font-family="Arial" font-size="12" fill="#111827">INT4</text>
+<text x="341.27" y="405.22" text-anchor="middle" font-family="Arial" font-size="11" fill="#1d4ed8">273</text>
+<text x="376.73" y="393.29" text-anchor="middle" font-family="Arial" font-size="11" fill="#c2410c">327</text>
+<rect x="431.74" y="446.38" width="29.46" height="25.62" fill="#2563eb"/>
+<rect x="467.20" y="441.42" width="29.46" height="30.58" fill="#f97316"/>
+<text transform="translate(464.20 500) rotate(35)" text-anchor="start" font-family="Arial" font-size="12" fill="#111827">NF4-like</text>
+<text x="446.47" y="440.38" text-anchor="middle" font-family="Arial" font-size="11" fill="#1d4ed8">115</text>
+<text x="481.93" y="435.42" text-anchor="middle" font-family="Arial" font-size="11" fill="#c2410c">137</text>
+<rect x="536.94" y="443.84" width="29.46" height="28.16" fill="#2563eb"/>
+<rect x="572.40" y="438.11" width="29.46" height="33.89" fill="#f97316"/>
+<text transform="translate(569.40 500) rotate(35)" text-anchor="start" font-family="Arial" font-size="12" fill="#111827">W4A8</text>
+<text x="551.67" y="437.84" text-anchor="middle" font-family="Arial" font-size="11" fill="#1d4ed8">127</text>
+<text x="587.13" y="432.11" text-anchor="middle" font-family="Arial" font-size="11" fill="#c2410c">152</text>
+<rect x="642.14" y="393.04" width="29.46" height="78.96" fill="#2563eb"/>
+<rect x="677.60" y="374.40" width="29.46" height="97.60" fill="#f97316"/>
+<text transform="translate(674.60 500) rotate(35)" text-anchor="start" font-family="Arial" font-size="12" fill="#111827">SP4 INT32x8</text>
+<text x="656.87" y="387.04" text-anchor="middle" font-family="Arial" font-size="11" fill="#1d4ed8">355</text>
+<text x="692.33" y="368.40" text-anchor="middle" font-family="Arial" font-size="11" fill="#c2410c">439</text>
+<rect x="747.34" y="277.37" width="29.46" height="194.63" fill="#2563eb"/>
+<rect x="782.80" y="167.20" width="29.46" height="304.80" fill="#f97316"/>
+<text transform="translate(779.80 500) rotate(35)" text-anchor="start" font-family="Arial" font-size="12" fill="#111827">SP4 Conv2D</text>
+<text x="762.07" y="271.37" text-anchor="middle" font-family="Arial" font-size="11" fill="#1d4ed8">875</text>
+<text x="797.53" y="161.20" text-anchor="middle" font-family="Arial" font-size="11" fill="#c2410c">1370</text>
+<rect x="852.54" y="216.80" width="29.46" height="255.20" fill="#2563eb"/>
+<rect x="888.00" y="142.95" width="29.46" height="329.05" fill="#f97316"/>
+<text transform="translate(885.00 500) rotate(35)" text-anchor="start" font-family="Arial" font-size="12" fill="#111827">SP4 Linear</text>
+<text x="867.27" y="210.80" text-anchor="middle" font-family="Arial" font-size="11" fill="#1d4ed8">1147</text>
+<text x="902.73" y="136.95" text-anchor="middle" font-family="Arial" font-size="11" fill="#c2410c">1479</text>
+<rect x="957.74" y="320.00" width="29.46" height="152.00" fill="#2563eb"/>
+<rect x="993.20" y="292.86" width="29.46" height="179.14" fill="#f97316"/>
+<text transform="translate(990.20 500) rotate(35)" text-anchor="start" font-family="Arial" font-size="12" fill="#111827">SP4 SSM proj</text>
+<text x="972.47" y="314.00" text-anchor="middle" font-family="Arial" font-size="11" fill="#1d4ed8">683</text>
+<text x="1007.93" y="286.86" text-anchor="middle" font-family="Arial" font-size="11" fill="#c2410c">805</text>
+<rect x="1062.94" y="249.84" width="29.46" height="222.16" fill="#2563eb"/>
+<rect x="1098.40" y="121.15" width="29.46" height="350.85" fill="#f97316"/>
+<text transform="translate(1095.40 500) rotate(35)" text-anchor="start" font-family="Arial" font-size="12" fill="#111827">SP4 MLP fused</text>
+<text x="1077.67" y="243.84" text-anchor="middle" font-family="Arial" font-size="11" fill="#1d4ed8">999</text>
+<text x="1113.13" y="115.15" text-anchor="middle" font-family="Arial" font-size="11" fill="#c2410c">1577</text>
 </svg>

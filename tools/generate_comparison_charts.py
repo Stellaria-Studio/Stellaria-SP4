@@ -47,6 +47,12 @@ def parse_metal(text: str) -> dict[str, dict[str, float]]:
             peak = re.search(r"peak_gops=([0-9.eE+-]+)", line)
             if kernel and avg and peak:
                 rows[kernel.group(1)] = {"avg_gops": float(avg.group(1)), "peak_gops": float(peak.group(1))}
+        if "backend_kernel=" in line:
+            kernel = re.search(r"backend_kernel=([^ ]+)", line)
+            avg = re.search(r"avg_gops=([0-9.eE+-]+)", line)
+            peak = re.search(r"peak_gops=([0-9.eE+-]+)", line)
+            if kernel and avg and peak:
+                rows[kernel.group(1)] = {"avg_gops": float(avg.group(1)), "peak_gops": float(peak.group(1))}
         if "throughput_scheme=" in line:
             scheme = re.search(r"throughput_scheme=(.*?) avg_ms=", line)
             avg = re.search(r"avg_gops=([0-9.eE+-]+)", line)
@@ -140,12 +146,24 @@ def make_throughput_chart(path: Path, metal: dict[str, dict[str, float]]) -> Non
         "W4A8 block",
         "SP4 INT32x8",
         "SP4Conv2D_W4A8_Block64",
+        "SP4Linear_Tile16_W4A8",
+        "SP4SSM_Projection_W4A8",
+        "SP4MLP_FusedProjectionGateSiLU_W4A8",
     ]
     rows = [(name, metal[name]) for name in preferred if name in metal]
     if not rows:
         return
-    width, height = 980, 560
-    left, right, top, bottom = 96, 32, 56, 128
+    display_name = {
+        "INT8 per-output": "INT8",
+        "INT4 per-output": "INT4",
+        "W4A8 block": "W4A8",
+        "SP4Conv2D_W4A8_Block64": "SP4 Conv2D",
+        "SP4Linear_Tile16_W4A8": "SP4 Linear",
+        "SP4SSM_Projection_W4A8": "SP4 SSM proj",
+        "SP4MLP_FusedProjectionGateSiLU_W4A8": "SP4 MLP fused",
+    }
+    width, height = 1180, 660
+    left, right, top, bottom = 96, 32, 58, 188
     plot_w = width - left - right
     plot_h = height - top - bottom
     ymax = max(max(row["avg_gops"], row["peak_gops"]) for _, row in rows) * 1.18
@@ -158,7 +176,7 @@ def make_throughput_chart(path: Path, metal: dict[str, dict[str, float]]) -> Non
     parts = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
         '<rect width="100%" height="100%" fill="#fbfbfc"/>',
-        f'<text x="{width/2:.0f}" y="30" text-anchor="middle" font-family="Inter,Arial" font-size="22" font-weight="700" fill="#1f2937">Metal throughput by quantization scheme</text>',
+        f'<text x="{width/2:.0f}" y="30" text-anchor="middle" font-family="Inter,Arial" font-size="22" font-weight="700" fill="#1f2937">Metal throughput: quantization schemes and SP4 backend kernels</text>',
         f'<rect x="{left}" y="{top}" width="{plot_w}" height="{plot_h}" fill="#fff" stroke="#d1d5db"/>',
     ]
     for i in range(6):
@@ -175,7 +193,8 @@ def make_throughput_chart(path: Path, metal: dict[str, dict[str, float]]) -> Non
         peak_h = top + plot_h - sy(row["peak_gops"])
         parts.append(f'<rect x="{cx-bar_w-3:.2f}" y="{sy(row["avg_gops"]):.2f}" width="{bar_w:.2f}" height="{avg_h:.2f}" fill="#2563eb"/>')
         parts.append(f'<rect x="{cx+3:.2f}" y="{sy(row["peak_gops"]):.2f}" width="{bar_w:.2f}" height="{peak_h:.2f}" fill="#f97316"/>')
-        parts.append(f'<text x="{cx:.2f}" y="{top+plot_h+18}" text-anchor="middle" font-family="Arial" font-size="12" fill="#111827">{name}</text>')
+        label = display_name.get(name, name)
+        parts.append(f'<text transform="translate({cx:.2f} {top+plot_h+28}) rotate(35)" text-anchor="start" font-family="Arial" font-size="12" fill="#111827">{label}</text>')
         parts.append(f'<text x="{cx-bar_w/2-3:.2f}" y="{sy(row["avg_gops"])-6:.2f}" text-anchor="middle" font-family="Arial" font-size="11" fill="#1d4ed8">{row["avg_gops"]:.0f}</text>')
         parts.append(f'<text x="{cx+bar_w/2+3:.2f}" y="{sy(row["peak_gops"])-6:.2f}" text-anchor="middle" font-family="Arial" font-size="11" fill="#c2410c">{row["peak_gops"]:.0f}</text>')
     parts.append("</svg>")
