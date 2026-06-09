@@ -35,7 +35,12 @@ typedef struct SP4BackendCaps {
     uint32_t supportsSmallKernelBatch;
     uint32_t supportsOutOfOrderDispatch;
     uint32_t supportsAutoFusion;
-    uint32_t reserved[1];
+    uint32_t supportsCommandBufferBatch;
+    uint32_t supportsBlendRefineFusion;
+    uint32_t supportsTiledGraphExecutor;
+    uint32_t supportsDequantCache;
+    uint32_t supportsPresentationReuse;
+    uint32_t reserved[4];
 } SP4BackendCaps;
 
 typedef struct SP4DeviceDesc {
@@ -86,6 +91,10 @@ typedef struct SP4DispatchItem {
     uint32_t dependencyMask;
     uint32_t fusionKind;
     uint32_t estimatedWorkItems;
+    uint32_t tileWidth;
+    uint32_t tileHeight;
+    uint32_t reuseCacheKey;
+    uint32_t outputSlot;
     const void* opParams;
     uint32_t opParamsBytes;
 } SP4DispatchItem;

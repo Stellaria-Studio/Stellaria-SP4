@@ -804,6 +804,40 @@ unpack / dot / scale / activation / requantize 融合
 普通 block 不承担 residual 访存成本
 ```
 
+SP4 后端调度器不应只做“逐 op 逐 command buffer”的直接翻译。实时视觉项目中更有效的执行单元是 **tiled / fused graph executor**：
+
+```text
+SP4 graph / hot subgraph
+-> compiler emits tile, fusion, dependency, reuse keys
+-> runtime prepare cache expands hot metadata once
+-> backend batches compatible dispatches into one native command buffer
+-> tile/block dequant cache feeds multiple pixels / channels / t outputs
+-> fused presentation or fused epilogue writes the final tensor / texture
+```
+
+Stellaria Motion 的实时插帧接入给出的通用经验是：
+
+```text
+多 t presentation 先复用 flow，再生成多个输出，而不是重复完整前向。
+blend / refine / guard 这类 presentation epilogue 应融合，避免满分辨率中间纹理写回。
+调度质量必须看 p95 / p99 长尾和 display cadence，不能只看平均 kernel 时间。
+display-owned texture 与 generation-owned texture 分离，完成后原子切换，避免闪烁与崩溃。
+flow height 由 targetFps、frameBudgetMs、multiTOutputCount 共同决定。
+```
+
+因此，SP4 backend caps 与 dispatch item 需要承载：
+
+```text
+command-buffer batch
+blend/refine fusion
+tiled graph executor
+dequant cache
+presentation reuse
+tile size
+reuse cache key
+output slot
+```
+
 ---
 
 ## 18. SP4 Kernel Contract

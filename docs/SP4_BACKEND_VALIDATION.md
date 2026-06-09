@@ -15,6 +15,7 @@ Metal GPU A1P reconstruct backend
 Metal fused W4A8 shader compilation
 Metal MLP/SSM specialized shader compilation
 Metal MLP/SSM synthetic dispatch benchmark and numeric reference
+Metal small-kernel command-buffer batching benchmark
 Slang reconstruct shader compilation to SPIR-V
 Slang fused W4A8 shader compilation to SPIR-V
 Slang MLP/SSM shader entry compilation to SPIR-V
@@ -71,6 +72,10 @@ INT4 per-output avg/peak:          269.64 / 328.687 GOPS
 NF4-like avg/peak:                 114.033 / 137.355 GOPS
 W4A8 block avg/peak:               124.478 / 151.978 GOPS
 SP4 INT32x8 avg/peak:              359.792 / 454.372 GOPS
+SP4CommandBufferBatch, 32 small kernels:
+  one command buffer per kernel: 3.8775 ms, 0.540851 GOPS
+  SP4 command-buffer batch:      0.471456 ms, 4.44825 GOPS
+  generated comparison speedup:  8.22453x
 ```
 
 High-accuracy zero-point trial:
@@ -115,3 +120,5 @@ The executed Metal validation verifies the core SP4 A1P ABI: INT4 unpack, zero-p
 `SP4SSM_Scan_FP16` is retained as a serial recurrence reference. `SP4SSM_Scan_Parallel256_FP16` and `SP4SSM_Scan_Parallel512_FP16` use chunked affine prefix scan, so they are the preferred SSM backend paths when the graph can expose scan dependencies. The faster chunk size can vary with token length, channel count, and current GPU scheduling noise.
 
 The throughput comparison kernels are synthetic same-shape microbenchmarks. They compare arithmetic/memory behavior of common quantization schemes on this machine, not full end-to-end video interpolation latency. The SP4 Conv2D rows are executed backend kernels with 16-pixel tiling, INT32 packed-dot accumulation, and block-boundary FP correction. Short Metal kernel timings can vary by run; use `docs/assets/sp4_comparison_metrics.json` as the latest generated result.
+
+The small-kernel scheduler benchmark compares two real Metal execution patterns for the same 32 tiny MLP epilogue dispatches: one command buffer plus wait per kernel, versus SP4-style command-buffer batching with one wait at the batch tail. It isolates the CPU/GPU synchronization and command-buffer boundary cost that showed up in Stellaria Motion realtime presentation. This does not replace end-to-end RIFE timing, but it proves that the scheduler metadata in `SP4KernelBatchDesc` and `SP4DispatchItem` can translate into large effective-throughput gains for small-kernel-heavy graphs.

@@ -62,6 +62,30 @@ def parse_metal(text: str) -> dict[str, dict[str, float]]:
     return rows
 
 
+def parse_scheduler(text: str) -> dict[str, float | int | str]:
+    for line in text.splitlines():
+        if "scheduler_bench=" not in line:
+            continue
+        name = re.search(r"scheduler_bench=([^ ]+)", line)
+        small_kernels = re.search(r"small_kernels=([0-9]+)", line)
+        naive_ms = re.search(r"naive_ms=([0-9.eE+-]+)", line)
+        batched_ms = re.search(r"batched_ms=([0-9.eE+-]+)", line)
+        speedup = re.search(r"speedup=([0-9.eE+-]+)", line)
+        naive_gops = re.search(r"naive_gops=([0-9.eE+-]+)", line)
+        batched_gops = re.search(r"batched_gops=([0-9.eE+-]+)", line)
+        if name and small_kernels and naive_ms and batched_ms and speedup and naive_gops and batched_gops:
+            return {
+                "name": name.group(1),
+                "small_kernels": int(small_kernels.group(1)),
+                "naive_ms": float(naive_ms.group(1)),
+                "batched_ms": float(batched_ms.group(1)),
+                "speedup": float(speedup.group(1)),
+                "naive_gops": float(naive_gops.group(1)),
+                "batched_gops": float(batched_gops.group(1)),
+            }
+    return {}
+
+
 def svg_polyline(points: list[tuple[float, float]], color: str, width: float = 2.4) -> str:
     pts = " ".join(f"{x:.2f},{y:.2f}" for x, y in points)
     return f'<polyline points="{pts}" fill="none" stroke="{color}" stroke-width="{width}" stroke-linejoin="round" stroke-linecap="round"/>'
@@ -201,6 +225,49 @@ def make_throughput_chart(path: Path, metal: dict[str, dict[str, float]]) -> Non
     path.write_text("\n".join(parts), encoding="utf-8")
 
 
+def make_scheduler_chart(path: Path, scheduler: dict[str, float | int | str]) -> None:
+    if not scheduler:
+        return
+    rows = [
+        ("one command buffer per small kernel", float(scheduler["naive_ms"]), float(scheduler["naive_gops"]), "#dc2626"),
+        ("SP4 command-buffer batch", float(scheduler["batched_ms"]), float(scheduler["batched_gops"]), "#16a34a"),
+    ]
+    width, height = 900, 480
+    left, right, top, bottom = 96, 32, 60, 104
+    plot_w = width - left - right
+    plot_h = height - top - bottom
+    ymax = max(row[2] for row in rows) * 1.20
+
+    def sy(v: float) -> float:
+        return top + (ymax - v) / ymax * plot_h
+
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
+        '<rect width="100%" height="100%" fill="#fbfbfc"/>',
+        f'<text x="{width/2:.0f}" y="30" text-anchor="middle" font-family="Inter,Arial" font-size="22" font-weight="700" fill="#1f2937">SP4 small-kernel scheduling benefit</text>',
+        f'<text x="{width/2:.0f}" y="52" text-anchor="middle" font-family="Arial" font-size="13" fill="#4b5563">{int(scheduler["small_kernels"])} identical small kernels, speedup {float(scheduler["speedup"]):.2f}x</text>',
+        f'<rect x="{left}" y="{top}" width="{plot_w}" height="{plot_h}" fill="#fff" stroke="#d1d5db"/>',
+    ]
+    for i in range(6):
+        y = top + plot_h * i / 5
+        v = ymax - ymax * i / 5
+        parts.append(f'<line x1="{left}" y1="{y:.2f}" x2="{left+plot_w}" y2="{y:.2f}" stroke="#e5e7eb"/>')
+        parts.append(f'<text x="{left-10}" y="{y+4:.2f}" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">{v:.1f}</text>')
+    parts.append(f'<text transform="translate(24 {top+plot_h/2:.0f}) rotate(-90)" text-anchor="middle" font-family="Arial" font-size="15" fill="#111827">Effective GOPS</text>')
+    group_w = plot_w / len(rows)
+    bar_w = 112.0
+    for i, (name, ms, gops, color) in enumerate(rows):
+        cx = left + group_w * (i + 0.5)
+        y = sy(gops)
+        h = top + plot_h - y
+        parts.append(f'<rect x="{cx-bar_w/2:.2f}" y="{y:.2f}" width="{bar_w:.2f}" height="{h:.2f}" fill="{color}"/>')
+        parts.append(f'<text x="{cx:.2f}" y="{y-8:.2f}" text-anchor="middle" font-family="Arial" font-size="13" fill="#111827">{gops:.1f} GOPS</text>')
+        parts.append(f'<text x="{cx:.2f}" y="{top+plot_h+28}" text-anchor="middle" font-family="Arial" font-size="13" fill="#111827">{name}</text>')
+        parts.append(f'<text x="{cx:.2f}" y="{top+plot_h+48}" text-anchor="middle" font-family="Arial" font-size="12" fill="#4b5563">{ms:.3f} ms</text>')
+    parts.append("</svg>")
+    path.write_text("\n".join(parts), encoding="utf-8")
+
+
 def main() -> int:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     run(["cmake", "-S", ".", "-B", "build-sdk"])
@@ -262,7 +329,9 @@ def main() -> int:
     int8_sp4["quality_profile"] = "int8-chase"
     baseline_rows["SP4 int8-chase ZP+learned"] = int8_sp4
 
-    metal = parse_metal(run(["./build-sdk/sp4metal-validate", "build/rife_cpp.sp4"]))
+    metal_output = run(["./build-sdk/sp4metal-validate", "build/rife_cpp.sp4"])
+    metal = parse_metal(metal_output)
+    scheduler = parse_scheduler(metal_output)
 
     palette = ["#2563eb", "#16a34a", "#f97316", "#9333ea", "#dc2626"]
     scatter = []
@@ -312,12 +381,20 @@ def main() -> int:
 
     chart3 = OUT_DIR / "sp4_throughput_comparison.svg"
     make_throughput_chart(chart3, metal)
+    chart4 = OUT_DIR / "sp4_scheduler_speedup.svg"
+    make_scheduler_chart(chart4, scheduler)
 
     report = {
         "sp4_curve": sp4_curve,
         "baseline_rows": baseline_rows,
         "metal_throughput": metal,
-        "charts": [str(chart1.relative_to(ROOT)), str(chart2.relative_to(ROOT)), str(chart3.relative_to(ROOT))],
+        "scheduler_bench": scheduler,
+        "charts": [
+            str(chart1.relative_to(ROOT)),
+            str(chart2.relative_to(ROOT)),
+            str(chart3.relative_to(ROOT)),
+            str(chart4.relative_to(ROOT)),
+        ],
     }
     (OUT_DIR / "sp4_comparison_metrics.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(json.dumps(report, indent=2))

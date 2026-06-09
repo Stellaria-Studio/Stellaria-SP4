@@ -4,6 +4,7 @@
 
 #include <cstring>
 #include <fstream>
+#include <iomanip>
 #include <regex>
 #include <sstream>
 
@@ -318,6 +319,134 @@ std::vector<float> ReconstructLayer(const LoadedAsset& asset, const LayerDesc& l
     }
     out.resize(original);
     return out;
+}
+
+bool PrepareRuntimeCache(const LoadedAsset& asset,
+                         const RuntimePrepareOptions& options,
+                         PreparedRuntimeCache& outCache,
+                         std::string* error) {
+    outCache = PreparedRuntimeCache{};
+    outCache.sourceSp4Bytes = asset.qweight.size() +
+                              asset.scaleFp16.size() * sizeof(uint16_t) +
+                              asset.mode.size() +
+                              asset.aux.size() +
+                              asset.residualIndex.size() * sizeof(int32_t) +
+                              asset.residualValueFp16.size() * sizeof(uint16_t) +
+                              asset.residualTable.size() * sizeof(int32_t);
+    const uint32_t layerLimit = options.maxLayers == 0
+        ? static_cast<uint32_t>(asset.manifest.layers.size())
+        : std::min<uint32_t>(options.maxLayers, static_cast<uint32_t>(asset.manifest.layers.size()));
+    uint64_t reconstructedValues = 0;
+    uint64_t residualEntries = 0;
+    for (uint32_t layerIndex = 0; layerIndex < layerLimit; ++layerIndex) {
+        const LayerDesc& layer = asset.manifest.layers[layerIndex];
+        if (layer.shape.size() != 2 && layer.shape.size() != 4) {
+            continue;
+        }
+        uint32_t valueCount = 1;
+        for (uint32_t dim : layer.shape) {
+            valueCount *= dim;
+        }
+        if (valueCount == 0) {
+            continue;
+        }
+        if (options.maxWeightValues != 0 &&
+            reconstructedValues + valueCount > options.maxWeightValues) {
+            break;
+        }
+
+        const std::vector<float> reconstructed = ReconstructLayer(asset, layer);
+        PreparedLayerDesc desc;
+        desc.sourceLayerIndex = layerIndex;
+        desc.weightOffset = static_cast<uint32_t>(outCache.weightFp16.size());
+        desc.weightCount = static_cast<uint32_t>(reconstructed.size());
+        desc.biasOffset = static_cast<uint32_t>(outCache.biasFp16.size());
+        desc.biasCount = options.includeBias ? layer.biasCount : 0;
+        desc.outputChannels = layer.shape.empty() ? 0 : layer.shape[0];
+        desc.inputChannels = layer.shape.size() > 1 ? layer.shape[1] : 1;
+        desc.kernelHeight = layer.shape.size() > 2 ? layer.shape[2] : 1;
+        desc.kernelWidth = layer.shape.size() > 3 ? layer.shape[3] : 1;
+        desc.flags = options.preferFp16WeightCache ? 1u : 0u;
+        outCache.layers.push_back(desc);
+        outCache.weightFp16.reserve(outCache.weightFp16.size() + reconstructed.size());
+        for (float value : reconstructed) {
+            outCache.weightFp16.push_back(FloatToHalf(value));
+        }
+        if (options.includeBias && layer.biasCount > 0) {
+            const uint32_t available = static_cast<uint32_t>(asset.biasFp16.size());
+            const uint32_t begin = std::min<uint32_t>(layer.biasOffset, available);
+            const uint32_t end = std::min<uint32_t>(begin + layer.biasCount, available);
+            if (begin < end) {
+                outCache.biasFp16.insert(outCache.biasFp16.end(),
+                                         asset.biasFp16.begin() + begin,
+                                         asset.biasFp16.begin() + end);
+            }
+            if (end - begin < layer.biasCount) {
+                outCache.biasFp16.insert(outCache.biasFp16.end(),
+                                         layer.biasCount - (end - begin),
+                                         FloatToHalf(0.0f));
+            }
+        }
+        reconstructedValues += reconstructed.size();
+        residualEntries += layer.residualEntries;
+    }
+    if (outCache.layers.empty()) {
+        if (error) {
+            *error = "SP4 runtime cache has no supported hot layers";
+        }
+        return false;
+    }
+    const bool multiT = options.multiTOutputCount > 1;
+    outCache.reuseFlowForMultiT = multiT && options.preferPresentationReuse;
+    outCache.commandBufferBatch = multiT && options.preferCommandBufferBatch;
+    outCache.blendRefineFusion = options.preferBlendRefineFusion;
+    outCache.tiledGraphExecutor = options.preferTiledGraphExecutor;
+    const float budget = options.frameBudgetMs > 0.0f ? options.frameBudgetMs : 16.67f;
+    const float fps = options.targetFps > 0.0f ? options.targetFps : 60.0f;
+    if (multiT && options.multiTOutputCount >= 4 && fps >= 119.0f) {
+        if (budget <= 8.5f) {
+            outCache.recommendedMaxFlowHeight = 216;
+        } else if (budget <= 13.0f) {
+            outCache.recommendedMaxFlowHeight = 360;
+        } else {
+            outCache.recommendedMaxFlowHeight = 432;
+        }
+    } else if (multiT && fps >= 59.0f) {
+        if (budget <= 10.0f) {
+            outCache.recommendedMaxFlowHeight = 360;
+        } else if (budget <= 18.0f) {
+            outCache.recommendedMaxFlowHeight = 432;
+        } else {
+            outCache.recommendedMaxFlowHeight = 544;
+        }
+    } else if (budget <= 18.0f) {
+        outCache.recommendedMaxFlowHeight = 544;
+    } else {
+        outCache.recommendedMaxFlowHeight = 720;
+    }
+    outCache.preparedBytes = outCache.weightFp16.size() * sizeof(uint16_t) +
+                             outCache.biasFp16.size() * sizeof(uint16_t) +
+                             outCache.layers.size() * sizeof(PreparedLayerDesc);
+    std::ostringstream summary;
+    summary << "prepared_layers=" << outCache.layers.size()
+            << " weight_values=" << outCache.weightFp16.size()
+            << " residuals_folded=" << residualEntries
+            << " prepared_bytes=" << outCache.preparedBytes
+            << " source_bytes=" << outCache.sourceSp4Bytes
+            << " reuse_flow=" << (outCache.reuseFlowForMultiT ? "yes" : "no")
+            << " command_batch=" << (outCache.commandBufferBatch ? "yes" : "no")
+            << " blend_refine_fused=" << (outCache.blendRefineFusion ? "yes" : "no")
+            << " tiled_executor=" << (outCache.tiledGraphExecutor ? "yes" : "no")
+            << " recommended_flow_h=" << outCache.recommendedMaxFlowHeight;
+    if (outCache.sourceSp4Bytes > 0) {
+        summary << " expansion="
+                << std::fixed << std::setprecision(2)
+                << (static_cast<double>(outCache.preparedBytes) /
+                    static_cast<double>(outCache.sourceSp4Bytes))
+                << "x";
+    }
+    outCache.scheduleSummary = summary.str();
+    return true;
 }
 
 } // namespace sp4

@@ -28,5 +28,13 @@ int main(int argc, char** argv) {
                   << " block_size=" << first.blockSize
                   << " rmse=" << first.rmse << "\n";
     }
+    sp4::PreparedRuntimeCache cache;
+    sp4::RuntimePrepareOptions options;
+    options.maxLayers = 3;
+    if (sp4::PrepareRuntimeCache(asset, options, cache, &error)) {
+        std::cout << "  runtime_cache=" << cache.scheduleSummary << "\n";
+    } else {
+        std::cout << "  runtime_cache=unavailable: " << error << "\n";
+    }
     return 0;
 }

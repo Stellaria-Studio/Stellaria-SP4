@@ -89,6 +89,16 @@ struct FormatBenchResult {
     double peakGops = 0.0;
 };
 
+struct SchedulerBenchResult {
+    std::string name;
+    uint32_t smallKernels = 0;
+    double naiveMs = 0.0;
+    double batchedMs = 0.0;
+    double speedup = 0.0;
+    double naiveGops = 0.0;
+    double batchedGops = 0.0;
+};
+
 struct CompareDispatchGPU {
     uint32_t pixels = 0;
     uint32_t outputChannels = 0;
@@ -809,6 +819,98 @@ ConvBenchResult RunSsmScanBench(id<MTLDevice> device,
     return result;
 }
 
+SchedulerBenchResult RunSmallKernelBatchBench(id<MTLDevice> device,
+                                              id<MTLCommandQueue> queue,
+                                              id<MTLComputePipelineState> pipeline) {
+    constexpr uint32_t tokens = 128;
+    constexpr uint32_t channels = 128;
+    constexpr uint32_t smallKernels = 32;
+    constexpr uint32_t warmup = 2;
+    constexpr uint32_t iterations = 16;
+    const uint32_t count = tokens * channels;
+    std::vector<uint16_t> up(count);
+    std::vector<uint16_t> gate(count);
+    std::vector<uint16_t> output(count, 0);
+    for (uint32_t i = 0; i < count; ++i) {
+        up[i] = sp4::FloatToHalf(static_cast<float>((static_cast<int>(i * 7u) % 113) - 56) / 64.0f);
+        gate[i] = sp4::FloatToHalf(static_cast<float>((static_cast<int>(i * 11u) % 97) - 48) / 48.0f);
+    }
+    SP4LinearDispatchGPU dispatch;
+    dispatch.tokens = tokens;
+    dispatch.activationStride = channels;
+    id<MTLBuffer> upBuffer = VectorBuffer(device, up);
+    id<MTLBuffer> gateBuffer = VectorBuffer(device, gate);
+    id<MTLBuffer> outputBuffer = VectorBuffer(device, output);
+    const MTLSize grid = MTLSizeMake((count + 3u) / 4u, 1, 1);
+    const MTLSize group = MTLSizeMake(std::max<NSUInteger>(1, pipeline.threadExecutionWidth), 1, 1);
+
+    std::vector<double> naiveTimes;
+    std::vector<double> batchedTimes;
+    naiveTimes.reserve(iterations);
+    batchedTimes.reserve(iterations);
+    for (uint32_t iter = 0; iter < warmup + iterations; ++iter) {
+        CFTimeInterval start = CACurrentMediaTime();
+        bool failed = false;
+        for (uint32_t i = 0; i < smallKernels; ++i) {
+            id<MTLCommandBuffer> commandBuffer = [queue commandBuffer];
+            id<MTLComputeCommandEncoder> encoder = [commandBuffer computeCommandEncoder];
+            [encoder setComputePipelineState:pipeline];
+            [encoder setBuffer:upBuffer offset:0 atIndex:0];
+            [encoder setBuffer:gateBuffer offset:0 atIndex:1];
+            [encoder setBuffer:outputBuffer offset:0 atIndex:2];
+            [encoder setBytes:&dispatch length:sizeof(dispatch) atIndex:3];
+            [encoder dispatchThreads:grid threadsPerThreadgroup:group];
+            [encoder endEncoding];
+            [commandBuffer commit];
+            [commandBuffer waitUntilCompleted];
+            if (commandBuffer.status != MTLCommandBufferStatusCompleted) {
+                failed = true;
+                break;
+            }
+        }
+        if (failed) {
+            return SchedulerBenchResult{"SP4CommandBufferBatch", smallKernels};
+        }
+        if (iter >= warmup) {
+            naiveTimes.push_back((CACurrentMediaTime() - start) * 1000.0);
+        }
+
+        start = CACurrentMediaTime();
+        id<MTLCommandBuffer> commandBuffer = [queue commandBuffer];
+        id<MTLComputeCommandEncoder> encoder = [commandBuffer computeCommandEncoder];
+        [encoder setComputePipelineState:pipeline];
+        [encoder setBuffer:upBuffer offset:0 atIndex:0];
+        [encoder setBuffer:gateBuffer offset:0 atIndex:1];
+        [encoder setBuffer:outputBuffer offset:0 atIndex:2];
+        [encoder setBytes:&dispatch length:sizeof(dispatch) atIndex:3];
+        for (uint32_t i = 0; i < smallKernels; ++i) {
+            [encoder dispatchThreads:grid threadsPerThreadgroup:group];
+        }
+        [encoder endEncoding];
+        [commandBuffer commit];
+        [commandBuffer waitUntilCompleted];
+        if (commandBuffer.status != MTLCommandBufferStatusCompleted) {
+            return SchedulerBenchResult{"SP4CommandBufferBatch", smallKernels};
+        }
+        if (iter >= warmup) {
+            batchedTimes.push_back((CACurrentMediaTime() - start) * 1000.0);
+        }
+    }
+
+    const double naiveMs = std::accumulate(naiveTimes.begin(), naiveTimes.end(), 0.0) / std::max<size_t>(1, naiveTimes.size());
+    const double batchedMs = std::accumulate(batchedTimes.begin(), batchedTimes.end(), 0.0) / std::max<size_t>(1, batchedTimes.size());
+    const double ops = 4.0 * static_cast<double>(count) * smallKernels;
+    SchedulerBenchResult result;
+    result.name = "SP4CommandBufferBatch";
+    result.smallKernels = smallKernels;
+    result.naiveMs = naiveMs;
+    result.batchedMs = batchedMs;
+    result.speedup = batchedMs > 0.0 ? naiveMs / batchedMs : 0.0;
+    result.naiveGops = ops / (naiveMs * 1.0e6);
+    result.batchedGops = ops / (batchedMs * 1.0e6);
+    return result;
+}
+
 } // namespace
 
 int main(int argc, char** argv) {
@@ -1045,6 +1147,7 @@ int main(int argc, char** argv) {
         ConvBenchResult ssmScanBench = RunSsmScanBench(device, queue, ssmScanPipeline, "SP4SSM_Scan_FP16", 0);
         ConvBenchResult ssmScanParallelBench = RunSsmScanBench(device, queue, ssmScanParallelPipeline, "SP4SSM_Scan_Parallel256_FP16", 256);
         ConvBenchResult ssmScanParallel512Bench = RunSsmScanBench(device, queue, ssmScanParallel512Pipeline, "SP4SSM_Scan_Parallel512_FP16", 512);
+        SchedulerBenchResult schedulerBench = RunSmallKernelBatchBench(device, queue, mlpGateFast4Pipeline);
         std::vector<FormatBenchResult> formatBenches;
         if (block64Layer >= 0) {
             const sp4::LayerDesc& benchLayer = asset.manifest.layers[block64Layer];
@@ -1119,9 +1222,16 @@ int main(int argc, char** argv) {
                       << " avg_gops=" << r.averageGops
                       << " peak_gops=" << r.peakGops << "\n";
         }
+        std::cout << "  scheduler_bench=" << schedulerBench.name
+                  << " small_kernels=" << schedulerBench.smallKernels
+                  << " naive_ms=" << schedulerBench.naiveMs
+                  << " batched_ms=" << schedulerBench.batchedMs
+                  << " speedup=" << schedulerBench.speedup
+                  << " naive_gops=" << schedulerBench.naiveGops
+                  << " batched_gops=" << schedulerBench.batchedGops << "\n";
         const bool specializedOk = linearBench.ok && ssmProjectionBench.ok && mlpGateBench.ok &&
             mlpGateFastBench.ok && mlpGateFast4Bench.ok && mlpGateHardSilu4Bench.ok && mlpFusedProjectionGateBench.ok && ssmScanBench.ok &&
-            ssmScanParallelBench.ok && ssmScanParallel512Bench.ok;
+            ssmScanParallelBench.ok && ssmScanParallel512Bench.ok && schedulerBench.speedup > 1.0;
         return (ok && convOk && specializedOk) ? 0 : 1;
     }
 }

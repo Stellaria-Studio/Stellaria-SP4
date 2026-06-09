@@ -7,7 +7,7 @@
       "mae": 0.00613,
       "max_abs": 0.161652,
       "task_acc": 89.75,
-      "cpu_ms": 139.82,
+      "cpu_ms": 129.583,
       "residual_ratio": 0.0
     },
     {
@@ -17,7 +17,7 @@
       "mae": 0.005944,
       "max_abs": 0.140825,
       "task_acc": 90.22,
-      "cpu_ms": 130.721,
+      "cpu_ms": 129.466,
       "residual_ratio": 0.005
     },
     {
@@ -27,7 +27,7 @@
       "mae": 0.005814,
       "max_abs": 0.140825,
       "task_acc": 90.42,
-      "cpu_ms": 129.825,
+      "cpu_ms": 138.587,
       "residual_ratio": 0.01
     },
     {
@@ -37,7 +37,7 @@
       "mae": 0.005583,
       "max_abs": 0.140825,
       "task_acc": 90.78,
-      "cpu_ms": 139.114,
+      "cpu_ms": 132.938,
       "residual_ratio": 0.02
     },
     {
@@ -47,7 +47,7 @@
       "mae": 0.005163,
       "max_abs": 0.140825,
       "task_acc": 91.38,
-      "cpu_ms": 130.99,
+      "cpu_ms": 133.874,
       "residual_ratio": 0.04
     }
   ],
@@ -59,7 +59,7 @@
       "mae": 1.7e-05,
       "max_abs": 0.249917,
       "task_acc": 99.26,
-      "cpu_ms": 804.845
+      "cpu_ms": 828.143
     },
     "INT8 per-output": {
       "bytes": 2278665.0,
@@ -68,7 +68,7 @@
       "mae": 0.000752,
       "max_abs": 0.00843,
       "task_acc": 98.79,
-      "cpu_ms": 804.845
+      "cpu_ms": 828.143
     },
     "INT4 weight-only per-output": {
       "bytes": 1142709.0,
@@ -77,7 +77,7 @@
       "mae": 0.01354,
       "max_abs": 0.159035,
       "task_acc": 78.27,
-      "cpu_ms": 804.845
+      "cpu_ms": 828.143
     },
     "NF4-like block codebook": {
       "bytes": 1208694.0,
@@ -86,7 +86,7 @@
       "mae": 0.006394,
       "max_abs": 0.268344,
       "task_acc": 88.76,
-      "cpu_ms": 804.845
+      "cpu_ms": 828.143
     },
     "W4A8 block no residual": {
       "bytes": 1280508.0,
@@ -95,7 +95,7 @@
       "mae": 0.008472,
       "max_abs": 0.159035,
       "task_acc": 86.05,
-      "cpu_ms": 804.845
+      "cpu_ms": 828.143
     },
     "SP4 A1P sparse residual": {
       "bytes": 1583724.0,
@@ -104,7 +104,7 @@
       "mae": 0.005583,
       "max_abs": 0.140825,
       "task_acc": 90.78,
-      "cpu_ms": 139.114,
+      "cpu_ms": 132.938,
       "residual_ratio": 0.02
     },
     "SP4 int8-chase ZP+learned": {
@@ -114,88 +114,98 @@
       "mae": 0.005346,
       "max_abs": 0.187433,
       "task_acc": 91.28,
-      "cpu_ms": 129.718,
+      "cpu_ms": 132.061,
       "residual_ratio": 0.02,
       "quality_profile": "int8-chase"
     }
   },
   "metal_throughput": {
     "SP4Conv2D_W4A8_Block32": {
-      "avg_gops": 109.053,
-      "peak_gops": 193.353
+      "avg_gops": 245.412,
+      "peak_gops": 272.184
     },
     "SP4Conv2D_W4A8_Block64": {
-      "avg_gops": 874.8,
-      "peak_gops": 1369.98
+      "avg_gops": 847.794,
+      "peak_gops": 1396.95
     },
     "SP4Linear_Tile16_W4A8": {
-      "avg_gops": 1147.04,
-      "peak_gops": 1478.98
+      "avg_gops": 1014.6,
+      "peak_gops": 1437.19
     },
     "SP4SSM_Projection_W4A8": {
-      "avg_gops": 683.216,
-      "peak_gops": 805.172
+      "avg_gops": 647.084,
+      "peak_gops": 692.439
     },
     "SP4MLP_Gated_Tile16_W4A8": {
-      "avg_gops": 8.43006,
-      "peak_gops": 23.9903
+      "avg_gops": 22.7062,
+      "peak_gops": 25.5167
     },
     "SP4MLP_Gated_Fast_W4A8": {
-      "avg_gops": 5.892,
-      "peak_gops": 21.3044
+      "avg_gops": 22.7328,
+      "peak_gops": 23.0615
     },
     "SP4MLP_Gated_Fast4_W4A8": {
-      "avg_gops": 32.3718,
-      "peak_gops": 36.6715
+      "avg_gops": 23.7176,
+      "peak_gops": 25.5945
     },
     "SP4MLP_Gated_HardSiLU4_W4A8": {
-      "avg_gops": 14.1866,
-      "peak_gops": 32.2949
+      "avg_gops": 14.7079,
+      "peak_gops": 32.5666
     },
     "SP4MLP_FusedProjectionGateSiLU_W4A8": {
-      "avg_gops": 998.546,
-      "peak_gops": 1576.97
+      "avg_gops": 1148.62,
+      "peak_gops": 1705.25
     },
     "SP4SSM_Scan_FP16": {
-      "avg_gops": 1.64867,
-      "peak_gops": 1.96179
+      "avg_gops": 1.53487,
+      "peak_gops": 1.82944
     },
     "SP4SSM_Scan_Parallel256_FP16": {
-      "avg_gops": 6.24741,
-      "peak_gops": 6.9061
+      "avg_gops": 5.33768,
+      "peak_gops": 5.82407
     },
     "SP4SSM_Scan_Parallel512_FP16": {
-      "avg_gops": 4.11751,
-      "peak_gops": 6.21685
+      "avg_gops": 3.93868,
+      "peak_gops": 5.30701
     },
     "FP16": {
-      "avg_gops": 440.104,
-      "peak_gops": 561.099
+      "avg_gops": 406.794,
+      "peak_gops": 565.037
     },
     "INT8 per-output": {
-      "avg_gops": 397.471,
-      "peak_gops": 506.421
+      "avg_gops": 380.205,
+      "peak_gops": 482.194
     },
     "INT4 per-output": {
-      "avg_gops": 273.179,
-      "peak_gops": 326.828
+      "avg_gops": 256.032,
+      "peak_gops": 309.081
     },
     "NF4-like": {
-      "avg_gops": 115.163,
-      "peak_gops": 137.458
+      "avg_gops": 116.193,
+      "peak_gops": 137.764
     },
     "W4A8 block": {
-      "avg_gops": 126.559,
-      "peak_gops": 152.34
+      "avg_gops": 131.318,
+      "peak_gops": 153.672
     },
     "SP4 INT32x8": {
-      "avg_gops": 354.908,
-      "peak_gops": 438.685
+      "avg_gops": 342.146,
+      "peak_gops": 432.987
     }
+  },
+  "scheduler_bench": {
+    "name": "SP4CommandBufferBatch",
+    "small_kernels": 32,
+    "naive_ms": 3.8775,
+    "batched_ms": 0.471456,
+    "speedup": 8.22453,
+    "naive_gops": 0.540851,
+    "batched_gops": 4.44825
   },
   "charts": [
     "docs/assets/sp4_accuracy_compression_curve.svg",
     "docs/assets/sp4_residual_tradeoff_curve.svg",
-    "docs/assets/sp4_throughput_comparison.svg"
+    "docs/assets/sp4_throughput_comparison.svg",
+    "docs/assets/sp4_scheduler_speedup.svg"
   ]
 }

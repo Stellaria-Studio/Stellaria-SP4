@@ -90,6 +90,44 @@ SP4_FUSION_SSM_PROJECTION_SCAN
 
 Backends use this to merge many identical small kernels, encode unrelated kernels out of order, and apply automatic operator fusion when tensor lifetimes and precision rules make it safe.
 
+### Realtime Presentation Scheduler
+
+Stellaria Motion 的 24fps 到 60fps 实时插帧暴露了一个可复用规律：低精度后端的平均 kernel 速度不是唯一瓶颈，CPU/GPU 同步边界、重复 flow 前向、满分辨率中间纹理写回和 presentation cadence 都会让观感退回“像 24fps”。
+
+SP4 runtime cache 因此把这些调度意图显式写入 `RuntimePrepareOptions` 和 `PreparedRuntimeCache`：
+
+```text
+targetFps / frameBudgetMs
+multiTOutputCount
+preferPresentationReuse
+preferCommandBufferBatch
+preferBlendRefineFusion
+preferTiledGraphExecutor
+recommendedMaxFlowHeight
+```
+
+后端实现应优先遵循以下顺序：
+
+```text
+1. 一次 flow/feature 前向，复用到多个 t 输出。
+2. 同一组 t 输出编码进同一个 native command buffer，只在批尾同步。
+3. 将 blend、residual refine、overshoot guard 合并成单个 presentation kernel。
+4. 对大 graph 使用 tile/block 级 dequant cache，避免每像素重复解码相同 SP4 权重。
+5. 让 scheduler 依据 p95/p99 和 display cadence 调整 flow height，而不是只看 avg。
+6. presentation 输出纹理必须使用 generation-owned texture，完成后再原子切换，避免显示端与生成端同时 blit 同一纹理。
+```
+
+这不是 Stellaria Motion 专属技巧，而是 SP4 compiler/scheduler 的通用策略：compiler 负责暴露可融合的 op 和 tile/reuse key，runtime cache 给出预算与复用意图，backend 在自己的命令队列里完成 tiled/fused graph execution。
+
+Stellaria Motion 当前把这套策略落成两个实时档：
+
+```text
+60fps:  quiet 360p, balanced 432p, quality 544p
+120fps: quiet 216p, balanced 360p, quality 432p
+```
+
+这些档位不是格式限制，而是当前 M4 Pro + RIFE SP4 A1P hot-subgraph executor 的调度建议。后续 tiled/fused graph executor 扩大覆盖后，scheduler 可以把 quality 档继续推向 720p flow。
+
 ## Validation Contract
 
 The C++ compiler writes the same `.sp4` A1P container consumed by the existing Python validator. This gives us a cross-language check:
