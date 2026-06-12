@@ -6,6 +6,8 @@ option(SP4_BUILD_TOOLS "Build SP4 SDK command line tools" ON)
 add_library(sp4sdk STATIC
   sdk/src/SP4Asset.cpp
   sdk/src/SP4Compiler.cpp
+  sdk/src/SP4ECompiler.cpp
+  sdk/src/SP4ERuntime.cpp
   sdk/src/SP4Runtime.cpp
   sdk/src/SafeTensorsReader.cpp
 )
@@ -19,6 +21,12 @@ if(SP4_BUILD_TOOLS)
 
   add_executable(sp4inspect-cpp sdk/tools/sp4inspect.cpp)
   target_link_libraries(sp4inspect-cpp PRIVATE sp4sdk)
+
+  add_executable(sp4ec sdk/tools/sp4ec.cpp)
+  target_link_libraries(sp4ec PRIVATE sp4sdk)
+
+  add_executable(sp4einspect-cpp sdk/tools/sp4einspect.cpp)
+  target_link_libraries(sp4einspect-cpp PRIVATE sp4sdk)
 
   add_executable(sp4quantbench sdk/tools/sp4quantbench.cpp)
   target_link_libraries(sp4quantbench PRIVATE sp4sdk)

@@ -60,6 +60,20 @@ Slang:
   portable backend source for DX12/Vulkan and future SP4E work
 ```
 
+## SP4E C++ Extension
+
+SP4E preview support is part of the C++ SDK, not the Python research path:
+
+```text
+SP4EFormat.h      SP4E A1P modes, block/tile ABI, hardware gate records
+SP4ECompiler.h    sp4ec compile API for FP4/INT4 mixed assets
+SP4ERuntime.h     .sp4e loader, CPU reference reconstruction, runtime gate names
+sp4ec             C++ SP4E compiler CLI
+sp4einspect-cpp   C++ SP4E loader/inspection smoke tool
+```
+
+The first version emits `SP4E-F4I4block16(A1P)` and `SP4E-F4I4tile16x16(A1P)` metadata with a selected 4-bit main plane, packed mode/aux control nibbles, compact sparse FP16 residuals, rank-4 low-rank correction, and per-output channel gain correction. SP4 is an SP4E subset: ordinary hosts use `SP4E_SP4_SUBSET_PATH`, routing INT4 and asymmetric zero-point blocks to SP4-style backends while keeping FP4/correction-sensitive blocks on the SP4E reference or future tensor paths.
+
 ## Supported Compile Surface
 
 The C++ compiler now compiles the common weight tensors it can execute or hand to a specialized backend:

@@ -1,27 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="900" height="480" viewBox="0 0 900 480">
 <rect width="100%" height="100%" fill="#fbfbfc"/>
 <text x="450" y="30" text-anchor="middle" font-family="Inter,Arial" font-size="22" font-weight="700" fill="#1f2937">SP4 small-kernel scheduling benefit</text>
-<text x="450" y="52" text-anchor="middle" font-family="Arial" font-size="13" fill="#4b5563">32 identical small kernels, speedup 8.22x</text>
+<text x="450" y="52" text-anchor="middle" font-family="Arial" font-size="13" fill="#4b5563">32 identical small kernels, speedup 13.57x</text>
 <rect x="96" y="60" width="772" height="316" fill="#fff" stroke="#d1d5db"/>
 <line x1="96" y1="60.00" x2="868" y2="60.00" stroke="#e5e7eb"/>
-<text x="86" y="64.00" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">5.3</text>
+<text x="86" y="64.00" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">6.1</text>
 <line x1="96" y1="123.20" x2="868" y2="123.20" stroke="#e5e7eb"/>
-<text x="86" y="127.20" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">4.3</text>
+<text x="86" y="127.20" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">4.9</text>
 <line x1="96" y1="186.40" x2="868" y2="186.40" stroke="#e5e7eb"/>
-<text x="86" y="190.40" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">3.2</text>
+<text x="86" y="190.40" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">3.7</text>
 <line x1="96" y1="249.60" x2="868" y2="249.60" stroke="#e5e7eb"/>
-<text x="86" y="253.60" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">2.1</text>
+<text x="86" y="253.60" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">2.4</text>
 <line x1="96" y1="312.80" x2="868" y2="312.80" stroke="#e5e7eb"/>
-<text x="86" y="316.80" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">1.1</text>
+<text x="86" y="316.80" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">1.2</text>
 <line x1="96" y1="376.00" x2="868" y2="376.00" stroke="#e5e7eb"/>
 <text x="86" y="380.00" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">0.0</text>
 <text transform="translate(24 218) rotate(-90)" text-anchor="middle" font-family="Arial" font-size="15" fill="#111827">Effective GOPS</text>
-<rect x="233.00" y="343.98" width="112.00" height="32.02" fill="#dc2626"/>
-<text x="289.00" y="335.98" text-anchor="middle" font-family="Arial" font-size="13" fill="#111827">0.5 GOPS</text>
+<rect x="233.00" y="356.59" width="112.00" height="19.41" fill="#dc2626"/>
+<text x="289.00" y="348.59" text-anchor="middle" font-family="Arial" font-size="13" fill="#111827">0.4 GOPS</text>
 <text x="289.00" y="404" text-anchor="middle" font-family="Arial" font-size="13" fill="#111827">one command buffer per small kernel</text>
-<text x="289.00" y="424" text-anchor="middle" font-family="Arial" font-size="12" fill="#4b5563">3.877 ms</text>
+<text x="289.00" y="424" text-anchor="middle" font-family="Arial" font-size="12" fill="#4b5563">5.594 ms</text>
 <rect x="619.00" y="112.67" width="112.00" height="263.33" fill="#16a34a"/>
-<text x="675.00" y="104.67" text-anchor="middle" font-family="Arial" font-size="13" fill="#111827">4.4 GOPS</text>
+<text x="675.00" y="104.67" text-anchor="middle" font-family="Arial" font-size="13" fill="#111827">5.1 GOPS</text>
 <text x="675.00" y="404" text-anchor="middle" font-family="Arial" font-size="13" fill="#111827">SP4 command-buffer batch</text>
-<text x="675.00" y="424" text-anchor="middle" font-family="Arial" font-size="12" fill="#4b5563">0.471 ms</text>
+<text x="675.00" y="424" text-anchor="middle" font-family="Arial" font-size="12" fill="#4b5563">0.412 ms</text>
 </svg>

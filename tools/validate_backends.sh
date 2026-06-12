@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MODEL="$ROOT/Models/RIFE-safetensors/flownet.safetensors"
 ASSET="${1:-$ROOT/build/rife_cpp.sp4}"
+SP4E_ASSET="${SP4E_ASSET:-$ROOT/build/rife_cpp.sp4e}"
 
 if [[ ! -f "$MODEL" ]]; then
   echo "missing $MODEL"
@@ -25,6 +26,18 @@ cmake --build build-sdk
 
 python3 -m sp4_toolchain validate "$ASSET" --teacher "$MODEL"
 ./build-sdk/sp4metal-validate "$ASSET"
+
+./build-sdk/sp4ec compile \
+  --input "$MODEL" \
+  --output "$SP4E_ASSET" \
+  --adapter rife \
+  --target cpu-reference \
+  --activation-precision fp16 \
+  --quality-profile "${SP4E_QUALITY_PROFILE:-balanced}" \
+  --residual-ratio "${SP4E_RESIDUAL_RATIO:-0.01}" \
+  --fp16-fallback-ratio "${SP4E_FP16_FALLBACK_RATIO:-0}"
+
+./build-sdk/sp4einspect-cpp "$SP4E_ASSET"
 
 xcrun -sdk macosx metal -I shaders/metal \
   -c shaders/metal/sp4_reconstruct.metal \
@@ -98,4 +111,4 @@ slangc shaders/slang/sp4_mlp_ssm.slang \
   -target spirv \
   -o build-sdk/sp4_ssm_scan.spv
 
-./build-sdk/sp4quantbench "$MODEL" "$ASSET"
+./build-sdk/sp4quantbench "$MODEL" "$ASSET" --sp4e "$SP4E_ASSET"

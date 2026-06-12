@@ -121,4 +121,39 @@ The executed Metal validation verifies the core SP4 A1P ABI: INT4 unpack, zero-p
 
 The throughput comparison kernels are synthetic same-shape microbenchmarks. They compare arithmetic/memory behavior of common quantization schemes on this machine, not full end-to-end video interpolation latency. The SP4 Conv2D rows are executed backend kernels with 16-pixel tiling, INT32 packed-dot accumulation, and block-boundary FP correction. Short Metal kernel timings can vary by run; use `docs/assets/sp4_comparison_metrics.json` as the latest generated result.
 
+## SP4E Local CPU Reference
+
+The validation flow also builds a `.sp4e` A1P asset with `sp4ec` and inspects it with `sp4einspect-cpp`. Because this host does not expose FP4 matrix acceleration, the expected SP4E runtime decision is `SP4E_SP4_SUBSET_PATH`: SP4-compatible INT4 blocks still route through the generic SP4 acceleration path.
+
+SP4E local validation is therefore a correctness and engineering-chain test:
+
+```text
+compile safetensors -> .sp4e
+load .sp4e
+reconstruct FP4/INT4 mixed block16 weights
+route SP4-compatible blocks through the SP4 subset plan
+decode selected 4-bit main-plane FP4 / INT4 / asymmetric zero-point blocks
+run CPU reference Conv2D / Linear operators
+measure RIFE task-proxy accuracy through sp4quantbench
+generate comparison charts
+```
+
+The current local metrics are recorded in `docs/assets/sp4_comparison_metrics.json`, with SP4E charts in:
+
+```text
+docs/assets/sp4e_accuracy_comparison.svg
+docs/assets/sp4e_backend_gate.svg
+```
+
+Current default SP4E validation point on this host:
+
+```text
+quality_profile=balanced
+residual_ratio=0.01
+compression=2.12x
+rmse=0.004722
+task_acc=96.36%
+runtime_gate=SP4E_SP4_SUBSET_PATH
+```
+
 The small-kernel scheduler benchmark compares two real Metal execution patterns for the same 32 tiny MLP epilogue dispatches: one command buffer plus wait per kernel, versus SP4-style command-buffer batching with one wait at the batch tail. It isolates the CPU/GPU synchronization and command-buffer boundary cost that showed up in Stellaria Motion realtime presentation. This does not replace end-to-end RIFE timing, but it proves that the scheduler metadata in `SP4KernelBatchDesc` and `SP4DispatchItem` can translate into large effective-throughput gains for small-kernel-heavy graphs.

@@ -40,7 +40,15 @@ typedef struct SP4BackendCaps {
     uint32_t supportsTiledGraphExecutor;
     uint32_t supportsDequantCache;
     uint32_t supportsPresentationReuse;
-    uint32_t reserved[4];
+    uint32_t supportsSp4eA1P;
+    uint32_t supportsNativeFp4Tensor;
+    uint32_t supportsNativeInt4Tensor;
+    uint32_t supportsSp4eTile16x16;
+    uint32_t supportsSp4eFp4Int4Bridge;
+    uint32_t supportsSp4eSparseR16;
+    float lowPrecisionAluSpeedup;
+    float sp4eVsSp4ProfiledSpeedup;
+    uint32_t reserved[2];
 } SP4BackendCaps;
 
 typedef struct SP4DeviceDesc {

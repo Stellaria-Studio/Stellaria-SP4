@@ -36,6 +36,10 @@ enum class PrecisionKind : uint32_t {
     Fp16 = 3,
     Fp32 = 4,
     ExternalOptimized = 5,
+    Sp4eFp4Main = 6,
+    Sp4eInt4Main = 7,
+    Sp4eFp4Int4Bridge = 8,
+    Sp4eSparseR16 = 9,
 };
 
 enum class OpKind : uint32_t {
@@ -70,6 +74,11 @@ enum class KernelFamily : uint32_t {
     SsmScanFp16 = 13,
     MlpFusedProjectionGateSiluW4A8 = 14,
     SsmScanParallelFp16 = 15,
+    Sp4eFp4TensorTile16x16 = 16,
+    Sp4eInt4TensorTile16x16 = 17,
+    Sp4eFp4Int4BridgeTile16x16 = 18,
+    Sp4eSparseR16Correction = 19,
+    Sp4eSp4Fallback = 20,
 };
 
 struct SectionDesc {

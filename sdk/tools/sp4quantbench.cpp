@@ -1,4 +1,5 @@
 #include "sp4/SP4Runtime.h"
+#include "sp4/SP4ERuntime.h"
 #include "sp4/SafeTensorsReader.h"
 
 #include "../src/SP4Common.h"
@@ -349,6 +350,7 @@ bool IsRuntimeLayer(const std::string& name) {
 int main(int argc, char** argv) {
     std::string teacherPath = "Models/RIFE-safetensors/flownet.safetensors";
     std::string assetPath = "build/rife_cpp.sp4";
+    std::string sp4eAssetPath;
     TaskProfile taskProfile = TaskProfile::RifeMotionBoundaryV2;
     int positional = 0;
     for (int i = 1; i < argc; ++i) {
@@ -357,11 +359,18 @@ int main(int argc, char** argv) {
             taskProfile = ParseTaskProfile(argv[++i]);
         } else if (arg.rfind("--task-profile=", 0) == 0) {
             taskProfile = ParseTaskProfile(arg.substr(std::string("--task-profile=").size()));
+        } else if (arg == "--sp4e" && i + 1 < argc) {
+            sp4eAssetPath = argv[++i];
+        } else if (arg.rfind("--sp4e=", 0) == 0) {
+            sp4eAssetPath = arg.substr(std::string("--sp4e=").size());
         } else if (positional == 0) {
             teacherPath = arg;
             ++positional;
         } else if (positional == 1) {
             assetPath = arg;
+            ++positional;
+        } else if (positional == 2) {
+            sp4eAssetPath = arg;
             ++positional;
         }
     }
@@ -471,6 +480,54 @@ int main(int argc, char** argv) {
         rows.push_back(sp4Row);
     } else {
         std::cerr << "sp4quantbench: warning: " << error << "\n";
+    }
+
+    if (!sp4eAssetPath.empty()) {
+        sp4::LoadedSP4EAsset sp4eAsset;
+        if (sp4::LoadSP4EAsset(sp4eAssetPath, sp4eAsset, &error)) {
+            Accum sp4eAccum;
+            TaskAccum sp4eTask(taskProfile);
+            const auto sp4eStart = std::chrono::steady_clock::now();
+            for (const sp4::SP4ELayerDesc& layer : sp4eAsset.manifest.layers) {
+                if (layer.shape.size() != 4) {
+                    continue;
+                }
+                std::vector<float> teacher;
+                if (!reader.ReadF32(layer.name, teacher, &error)) {
+                    std::cerr << "sp4quantbench: " << error << "\n";
+                    return 1;
+                }
+                std::vector<float> actual = sp4::ReconstructSP4ELayer(sp4eAsset, layer);
+                for (size_t i = 0; i < teacher.size(); ++i) {
+                    sp4eAccum.Add(teacher[i], actual[i]);
+                }
+                sp4eTask.AddProbe(layer.name, teacher, actual, layer.shape);
+            }
+            Metrics sp4eRow;
+            sp4eRow.name = "SP4E A1P CPU reference";
+            sp4eRow.bytes = sp4eAsset.manifest.sp4eWeightBytes;
+            if (sp4eRow.bytes == 0) {
+                sp4eRow.bytes = sp4eAsset.sections.qweightFp4.size() +
+                                sp4eAsset.sections.qweightInt4.size() +
+                                sp4eAsset.sections.scaleFp16Fp4.size() * 2ull +
+                                sp4eAsset.sections.scaleFp16Int4.size() * 2ull +
+                                sp4eAsset.sections.biasFp16.size() * 2ull +
+                                sp4eAsset.sections.mode.size() +
+                                sp4eAsset.sections.aux.size() +
+                                sp4eAsset.sections.bridge.size() +
+                                sp4eAsset.sections.residualIndex.size() +
+                                sp4eAsset.sections.residualValueFp16.size() * 2ull +
+                                sp4eAsset.sections.residualTable.size() * 4ull +
+                                sp4eAsset.sections.activationPrecision.size();
+            }
+            sp4eRow.compression = static_cast<double>(teacherFp16Bytes) / std::max<uint64_t>(1, sp4eRow.bytes);
+            sp4eRow.ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - sp4eStart).count();
+            sp4eAccum.Finish(sp4eRow);
+            sp4eTask.Finish(sp4eRow);
+            rows.push_back(sp4eRow);
+        } else {
+            std::cerr << "sp4quantbench: warning: " << error << "\n";
+        }
     }
 
     std::cout << "SP4 local quantization comparison\n";

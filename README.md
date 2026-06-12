@@ -4,6 +4,34 @@ Stellaria SP4 is a low-precision inference SDK from **Stellaria Studio**. It is 
 
 SP4 is not only a quantization recipe. It is a compiler, asset format, runtime ABI, and Metal/Slang backend contract for executing W4A8-style visual inference with project-aware accuracy recovery.
 
+## SP4E Development Preview
+
+SP4E is the in-development C++ extension layer for SP4. It explores FP4 / INT4 mixed assets, SP4-subset fallback, and future matrix-accelerated backends while keeping the existing SP4 toolchain usable on ordinary hardware:
+
+```text
+SP4E-F4I4block16(A1P)
+SP4E-F4I4tile16x16(A1P)
+```
+
+The SP4E path is not considered production-frozen yet. The repository currently includes the C++ compiler, asset container, loader, inspector, CPU reference reconstruction, CPU reference Conv2D/Linear operators, backend gate metadata, and generated comparison charts. Python remains useful for SP4 research and regression helpers, but SP4E core compile/load/reference behavior is C++ because this is runtime and HPC infrastructure.
+
+SP4 is treated as an SP4E subset. On machines without FP4 matrix acceleration, INT4-compatible and asymmetric zero-point blocks route through the SP4 subset path while FP4 and correction-sensitive blocks use the SP4E reference or future tensor paths. The expected generic-host decision is `SP4E_SP4_SUBSET_PATH`.
+
+```bash
+cmake -S . -B build-sdk
+cmake --build build-sdk
+./build-sdk/sp4ec compile --input model.safetensors --output model.sp4e --adapter generic
+./build-sdk/sp4einspect-cpp model.sp4e
+```
+
+See [docs/SP4E_SYSTEM_DEFINITION.md](docs/SP4E_SYSTEM_DEFINITION.md).
+
+Generated local SP4E comparison charts are included so the development preview is measured against the same public RIFE task-proxy as SP4:
+
+![SP4E accuracy comparison](docs/assets/sp4e_accuracy_comparison.svg)
+
+![SP4E backend gate](docs/assets/sp4e_backend_gate.svg)
+
 ## What It Is For
 
 - Visual inference and video models where artifacts matter more than a single scalar RMSE.
@@ -53,8 +81,9 @@ This is not a full video MOS/LPIPS benchmark. It is designed to expose the kinds
 | W4A8 block, no residual | 3.55x | 0.010679 | 0.008472 | 0.159035 | 86.05% |
 | SP4 adaptive sparse residual | 2.87x | 0.007060 | 0.005583 | 0.140825 | 90.78% |
 | SP4 int8-chase ZP+learned | 2.81x | 0.006678 | 0.005346 | 0.187433 | 91.28% |
+| SP4E A1P development preview, 2x-constrained | 2.12x | 0.004722 | 0.003660 | 0.195697 | 96.36% |
 
-The honest tradeoff: INT8 is still the accuracy target to chase, while SP4 keeps much of the compression and backend-friendly execution behavior of 4-bit quantization. On this RIFE task-proxy, SP4 beats the local NF4-like and plain W4A8 baselines in task accuracy.
+The honest tradeoff: INT8 is still the accuracy target to chase, while SP4 keeps much of the compression and backend-friendly execution behavior of 4-bit quantization. SP4E is the higher-accuracy development path: in the current 2x-constrained RIFE task-proxy point, it keeps better-than-INT8 compression and closes a substantial part of the task-accuracy gap. The current SP4E result uses packed control nibbles, compact sparse residual tables, L2-optimized block scales, task-ranked sparse residuals, rank-4 FP16 low-rank correction, and per-output channel gain correction.
 
 ![SP4 accuracy and compression](docs/assets/sp4_accuracy_compression_curve.svg)
 
@@ -110,6 +139,7 @@ SP4 combines a compact 4-bit main path with explicit accuracy recovery:
 - Sparse FP16 residual entries repair sensitive weights and blocks.
 - Backend plans keep dispatch predictable for Metal and Slang.
 - Fused kernels avoid launch overhead for common MLP/SSM/RIFE patterns.
+- SP4E extends this with selected FP4/INT4 block16 main planes, packed per-block control nibbles, SP4-subset fallback, low-rank residual sidecars, and channel correction metadata for future matrix backends.
 
 The runtime does not guess. The compiler chooses block modes offline, writes fixed metadata into the `.sp4` asset, and the backend executes that plan.
 

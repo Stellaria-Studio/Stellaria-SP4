@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="620" viewBox="0 0 980 620">
+<rect width="100%" height="100%" fill="#fbfbfc"/>
+<text x="490" y="30" text-anchor="middle" font-family="Inter,Arial" font-size="22" font-weight="700" fill="#1f2937">SP4 vs SP4E CPU-reference accuracy sweep</text>
+<rect x="82" y="58" width="866" height="480" fill="#fff" stroke="#d1d5db"/>
+<line x1="82.00" y1="58" x2="82.00" y2="538" stroke="#e5e7eb"/>
+<line x1="82" y1="58.00" x2="948" y2="58.00" stroke="#e5e7eb"/>
+<text x="82.00" y="562" text-anchor="middle" font-family="Arial" font-size="12" fill="#4b5563">-8.00</text>
+<text x="72" y="62.00" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">99.24</text>
+<line x1="255.20" y1="58" x2="255.20" y2="538" stroke="#e5e7eb"/>
+<line x1="82" y1="154.00" x2="948" y2="154.00" stroke="#e5e7eb"/>
+<text x="255.20" y="562" text-anchor="middle" font-family="Arial" font-size="12" fill="#4b5563">15.20</text>
+<text x="72" y="158.00" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">97.17</text>
+<line x1="428.40" y1="58" x2="428.40" y2="538" stroke="#e5e7eb"/>
+<line x1="82" y1="250.00" x2="948" y2="250.00" stroke="#e5e7eb"/>
+<text x="428.40" y="562" text-anchor="middle" font-family="Arial" font-size="12" fill="#4b5563">38.40</text>
+<text x="72" y="254.00" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">95.10</text>
+<line x1="601.60" y1="58" x2="601.60" y2="538" stroke="#e5e7eb"/>
+<line x1="82" y1="346.00" x2="948" y2="346.00" stroke="#e5e7eb"/>
+<text x="601.60" y="562" text-anchor="middle" font-family="Arial" font-size="12" fill="#4b5563">61.60</text>
+<text x="72" y="350.00" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">93.03</text>
+<line x1="774.80" y1="58" x2="774.80" y2="538" stroke="#e5e7eb"/>
+<line x1="82" y1="442.00" x2="948" y2="442.00" stroke="#e5e7eb"/>
+<text x="774.80" y="562" text-anchor="middle" font-family="Arial" font-size="12" fill="#4b5563">84.80</text>
+<text x="72" y="446.00" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">90.96</text>
+<line x1="948.00" y1="58" x2="948.00" y2="538" stroke="#e5e7eb"/>
+<line x1="82" y1="538.00" x2="948" y2="538.00" stroke="#e5e7eb"/>
+<text x="948.00" y="562" text-anchor="middle" font-family="Arial" font-size="12" fill="#4b5563">108.00</text>
+<text x="72" y="542.00" text-anchor="end" font-family="Arial" font-size="12" fill="#4b5563">88.89</text>
+<text x="515" y="596" text-anchor="middle" font-family="Arial" font-size="15" fill="#111827">Sparse residual budget (%)</text>
+<text transform="translate(24 298) rotate(-90)" text-anchor="middle" font-family="Arial" font-size="15" fill="#111827">Task-proxy accuracy (%)</text>
+<polyline points="141.72,498.00 145.46,476.22 149.19,466.95 156.66,450.26 160.39,443.77 164.12,436.82 171.59,422.45" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="141.72" cy="498.00" r="4.5" fill="#2563eb"/>
+<text x="148.72" y="491.00" font-family="Arial" font-size="12" fill="#2563eb">0%</text>
+<circle cx="145.46" cy="476.22" r="4.5" fill="#2563eb"/>
+<text x="152.46" y="469.22" font-family="Arial" font-size="12" fill="#2563eb">0%</text>
+<circle cx="149.19" cy="466.95" r="4.5" fill="#2563eb"/>
+<text x="156.19" y="459.95" font-family="Arial" font-size="12" fill="#2563eb">1%</text>
+<circle cx="156.66" cy="450.26" r="4.5" fill="#2563eb"/>
+<text x="163.66" y="443.26" font-family="Arial" font-size="12" fill="#2563eb">2%</text>
+<circle cx="160.39" cy="443.77" r="4.5" fill="#2563eb"/>
+<text x="167.39" y="436.77" font-family="Arial" font-size="12" fill="#2563eb">2%</text>
+<circle cx="164.12" cy="436.82" r="4.5" fill="#2563eb"/>
+<text x="171.12" y="429.82" font-family="Arial" font-size="12" fill="#2563eb">3%</text>
+<circle cx="171.59" cy="422.45" r="4.5" fill="#2563eb"/>
+<text x="178.59" y="415.45" font-family="Arial" font-size="12" fill="#2563eb">4%</text>
+<line x1="720" y1="76" x2="748" y2="76" stroke="#2563eb" stroke-width="3"/>
+<text x="756" y="80" font-family="Arial" font-size="13" fill="#111827">SP4 A1P</text>
+<polyline points="141.72,307.97 145.46,228.24 149.19,191.63 156.66,247.71 160.39,269.96 164.12,293.13 171.59,342.73" fill="none" stroke="#0f766e" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="141.72" cy="307.97" r="4.5" fill="#0f766e"/>
+<text x="148.72" y="300.97" font-family="Arial" font-size="12" fill="#0f766e">0%</text>
+<circle cx="145.46" cy="228.24" r="4.5" fill="#0f766e"/>
+<text x="152.46" y="221.24" font-family="Arial" font-size="12" fill="#0f766e">0%</text>
+<circle cx="149.19" cy="191.63" r="4.5" fill="#0f766e"/>
+<text x="156.19" y="184.63" font-family="Arial" font-size="12" fill="#0f766e">1%</text>
+<circle cx="156.66" cy="247.71" r="4.5" fill="#0f766e"/>
+<text x="163.66" y="240.71" font-family="Arial" font-size="12" fill="#0f766e">2%</text>
+<circle cx="160.39" cy="269.96" r="4.5" fill="#0f766e"/>
+<text x="167.39" y="262.96" font-family="Arial" font-size="12" fill="#0f766e">2%</text>
+<circle cx="164.12" cy="293.13" r="4.5" fill="#0f766e"/>
+<text x="171.12" y="286.13" font-family="Arial" font-size="12" fill="#0f766e">3%</text>
+<circle cx="171.59" cy="342.73" r="4.5" fill="#0f766e"/>
+<text x="178.59" y="335.73" font-family="Arial" font-size="12" fill="#0f766e">4%</text>
+<line x1="720" y1="96" x2="748" y2="96" stroke="#0f766e" stroke-width="3"/>
+<text x="756" y="100" font-family="Arial" font-size="13" fill="#111827">SP4E A1P CPU reference</text>
+<circle cx="149.19" cy="191.63" r="5.5" fill="#dc2626"/>
+<text x="157.19" y="195.63" font-family="Arial" font-size="12" fill="#111827">SP4E int8-chase</text>
+<circle cx="888.28" cy="98.00" r="5.5" fill="#9333ea"/>
+<text x="896.28" y="102.00" font-family="Arial" font-size="12" fill="#111827">SP4E max-accuracy</text>
+</svg>
