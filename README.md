@@ -1,5 +1,10 @@
 # Stellaria SP4
 
+> **Frozen historical repository (2026-09).** SP4/SP4E is now maintained only
+> under the [`Stellaria-BasicX` `main` branch](https://github.com/Stellaria-Studio/Stellaria-BasicX/tree/main/runtime/src/RHI/Extensions/Stellaria%20SPX/Stellaria%20SP4).
+> This repository remains as a reproducible history snapshot. New products must
+> link `Stellaria_BasicX_SP4` and must not develop or vendor this copy.
+
 Stellaria SP4 is a low-precision inference SDK from **Stellaria Studio**. It is built for visual models and Stellaria-owned project adaptation, with a practical goal: let GPUs and other hardware without dedicated low-precision matrix accelerators still benefit from 4-bit-style compression and throughput.
 
 SP4 is not only a quantization recipe. It is a compiler, asset format, runtime ABI, and Metal/Slang backend contract for executing W4A8-style visual inference with project-aware accuracy recovery.
