@@ -1,0 +1,35 @@
+{
+  "schema": "stellaria.sea.project.v2",
+  "id": "Stellaria-Studio/Stellaria-SP4",
+  "name": "Stellaria-SP4",
+  "repository": "Stellaria-Studio/Stellaria-SP4",
+  "defaultBranch": "main",
+  "tier": "R",
+  "profile": "frozen-history",
+  "purpose": "Frozen standalone SP4 history. Active SP backends belong to Stellaria-BasicX.",
+  "visibility": "public",
+  "concepts": ".sea/concepts.json",
+  "invariants": [
+    "Do not add active SP features here; follow the canonical BasicX implementation and this pinned historical README."
+  ],
+  "runtime": {
+    "repository": "Stellaria-Studio/Stellaria-SEA",
+    "version": "2.0.0",
+    "protocol": 2,
+    "sourceCommit": "6207b585ffabb8d182432bb3a03ba4d0a5279aa6"
+  },
+  "legacy": {
+    "definition": "tools/sea/project.json",
+    "history": "read-only; preserve original bytes"
+  },
+  "features": {
+    "contextBroker": true,
+    "architectureRegistry": true,
+    "localTaskCapsules": true,
+    "identityBinding": false,
+    "approvalWorkflow": false,
+    "enforcement": false,
+    "automaticPush": false
+  },
+  "sourceBaseline": "190fc12d59456092aff4f9548cdf5100442699cc"
+}

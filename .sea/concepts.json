@@ -1,0 +1,53 @@
+[
+  {
+    "id": "project-architecture",
+    "name": "Stellaria-SP4 architecture",
+    "aliases": [
+      "Stellaria-SP4",
+      "SP4",
+      "架构",
+      "职责"
+    ],
+    "intent": "Frozen standalone SP4 history. Active SP backends belong to Stellaria-BasicX.",
+    "qualification": "DECLARED_PROJECT_KNOWLEDGE",
+    "invariants": [
+      "Do not add active SP features here; follow the canonical BasicX implementation and this pinned historical README."
+    ],
+    "implementationPaths": [
+      "sdk"
+    ],
+    "dependsOn": [],
+    "acceptanceGates": [
+      "source identity",
+      "declared validation is not execution evidence"
+    ],
+    "sources": [
+      {
+        "path": "README.md",
+        "line": 1,
+        "commit": "190fc12d59456092aff4f9548cdf5100442699cc"
+      },
+      {
+        "path": "docs/SP4_KERNEL_CONTRACT_A1P.md",
+        "line": 1,
+        "commit": "190fc12d59456092aff4f9548cdf5100442699cc"
+      }
+    ],
+    "validation": [
+      "cmake --build build-sdk",
+      "cmake --build build-sdk"
+    ],
+    "validationSources": [
+      {
+        "path": "README.md",
+        "line": 27,
+        "commit": "190fc12d59456092aff4f9548cdf5100442699cc"
+      },
+      {
+        "path": "README.md",
+        "line": 155,
+        "commit": "190fc12d59456092aff4f9548cdf5100442699cc"
+      }
+    ]
+  }
+]

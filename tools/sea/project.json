@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "name": "Stellaria-SP4",
+  "components": {
+    "project": {
+      "description": "Frozen standalone SP4 history. Active SP backends belong to Stellaria-BasicX.",
+      "paths": [
+        "sdk"
+      ],
+      "approved": [
+        "README.md"
+      ],
+      "required_files": [
+        "README.md"
+      ],
+      "build_targets": [],
+      "validation": [],
+      "pitfalls": [
+        "Do not add active SP features here; follow the canonical BasicX implementation and this pinned historical README."
+      ],
+      "evidence": []
+    }
+  },
+  "build_metadata": [
+    "CMakeLists.txt",
+    "pyproject.toml"
+  ]
+}
